@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, FlatList, Pressable, View } from 'react-native'
 
-import { getAll, remove } from '../../api/RestaurantEndpoints'
+import { getAll, remove, changeSort } from '../../api/RestaurantEndpoints'
 import ImageCard from '../../components/ImageCard'
 import TextSemiBold from '../../components/TextSemibold'
 import TextRegular from '../../components/TextRegular'
@@ -77,11 +77,41 @@ export default function RestaurantsScreen ({ navigation, route }) {
             </TextRegular>
           </View>
         </Pressable>
+        <Pressable
+            onPress={() => { sort(item.id) }}
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed
+                  ? GlobalStyles.brandGreenTap
+                  : GlobalStyles.brandPrimary
+              },
+              styles.actionButton
+            ]}>
+          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+            <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
+            <TextRegular textStyle={styles.text}>
+              Sort by:
+              {item.sortDefault &&
+              <TextRegular textStyle={styles.text}>
+                  Default
+                </TextRegular>
+              }
+              {!item.sortDefault &&
+              <TextRegular textStyle={styles.text}>
+                  Price
+                </TextRegular>
+              }
+            </TextRegular>
+          </View>
+        </Pressable>
         </View>
       </ImageCard>
     )
   }
-
+  const sort = async (value) => {
+    await changeSort(value)
+    fetchRestaurants()
+  }
   const renderEmptyRestaurantsList = () => {
     return (
       <TextRegular textStyle={styles.emptyList}>
@@ -119,6 +149,7 @@ export default function RestaurantsScreen ({ navigation, route }) {
   const fetchRestaurants = async () => {
     try {
       const fetchedRestaurants = await getAll()
+      console.log(fetchRestaurants)
       setRestaurants(fetchedRestaurants)
     } catch (error) {
       showMessage({
@@ -201,7 +232,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     bottom: 5,
     position: 'absolute',
-    width: '90%'
+    width: '60%'
   },
   text: {
     fontSize: 16,

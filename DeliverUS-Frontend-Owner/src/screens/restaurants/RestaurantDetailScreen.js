@@ -15,7 +15,6 @@ import defaultProductImage from '../../../assets/product.jpeg'
 export default function RestaurantDetailScreen ({ navigation, route }) {
   const [restaurant, setRestaurant] = useState({})
   const [productToBeDeleted, setProductToBeDeleted] = useState(null)
-
   useEffect(() => {
     fetchRestaurantDetail()
   }, [route])
@@ -118,6 +117,9 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
   const fetchRestaurantDetail = async () => {
     try {
       const fetchedRestaurant = await getDetail(route.params.id)
+      if (!fetchedRestaurant.sortDefault) {
+        fetchedRestaurant.products.sort((a, b) => b.price - a.price)
+      }
       setRestaurant(fetchedRestaurant)
     } catch (error) {
       showMessage({

@@ -19,6 +19,18 @@ const index = async function (req, res) {
   }
 }
 
+const changeSort = async function (req, res) {
+  try {
+    const updatedRestaurant = await Restaurant.findByPk(req.params.restaurantId)
+    updatedRestaurant.sortDefault = !updatedRestaurant.sortDefault
+    updatedRestaurant.save()
+
+    res.json(updatedRestaurant)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
 const indexOwner = async function (req, res) {
   try {
     const restaurants = await Restaurant.findAll(
@@ -101,6 +113,7 @@ const RestaurantController = {
   create,
   show,
   update,
-  destroy
+  destroy,
+  changeSort
 }
 export default RestaurantController
